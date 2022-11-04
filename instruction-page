@@ -1,0 +1,154 @@
+const { application } = require("express");
+const createApplication = require("express/lib/express");
+const connectDB = require("./backend/config/db");
+
+==================npm init ========================
+package name: (reactjs-projects) whatsapp-clone
+entry point: (index.js) server.js
+author: Rez
+for other options you can keep pressing enter
+=========== npm i express =============
+create a folder named: backend
+
+Creating API, using Express JS:
+const express = require("express");
+const { chats } = require("./data/data");
+
+const app = express();
+
+app.get('/', (req, res) => {
+  res.send('API is running successfully');
+});
+
+// This requests all of the chats & display here: http://localhost:5000/api/chat
+app.get('/api/chat', (req, res) => {
+  res.send(chats);
+});
+
+// This requests a specific chat and display here: http://localhost:5000/api/chat/:id
+app.get('/api/chat/:id', (req, res) => {
+  // console.log(req.params.id);
+  const singleChat = chats.find((c) => c._id === req.params.id); // 'C' stands for COMPARE.
+  res.send(singleChat);
+});
+
+app.listen(5000, console.log("Server started on PORT 5000"));
+============.env==================
+Hiding the POST number: from the server.js file. Create a file named: .env and add: PORT=5000. THEN in the termonal intall (npm i dotenv). THEN Creat its const:
+const express = require("express");
+Then import it on top: const dotenv = require("dotenv");
+==========npm i nodemon=============
+for nodemon, add the word nodemon to the script at package.json.
+======use the POSTMAN app to check the API====== select GET then click SEND.
+============Create the REACT app inside the folder named frontend.
+npx create-react-app frontend
+========Remove Logo=======
+Remove logo and the code from the App.js file to live a simple div and a word to see nothing but the word on the webpage rendered.
+=====https://chakra-ui.com/=============
+For some ease of use of some components, add it to the system/install instanceof. Command: npm i @chakra-ui/react @emotion/react @emotion/styled framer-motion in FRONTEND folder/directory.
+=========Connecting front to back =============
+Because frontEnd is on port 3000 an backEnd on 5000, they do not see eachother. So to link them, in the FrontEnd folder (package.json)  add the proxy line ('proxy': 'http://127.0.01:5000')
+
+====== install npm install react-router-dom (To achieve multiple pages functionality) ==========
+to instal other version use e.g: npm install react-router-dom@5
+======create, import, folder PAGES components for our components====
+Create, Import ChatPage.js, HomePage.js, THEN create their key components in App.js.
+Do not forget to wrap/import everything in <BrowserRouter>.
+======= FETCHing, instal/use Axios========import axios from 'axios';
+To render/FETCH data from BackEnd to the FrontEnd, you should use AXIOS package.
+  const fetchChats = async () => {
+    const data = await axios.get('/api/chat');
+    console.log(data);
+  };
+
+  Then you must use useEffect which renders something fro the first time. and that thing will be the "fetchChats()" function.
+  useEffect(() => {
+    fetchChats();
+  }, []);
+===============
+Then return what you like:
+
+  return (
+    <div>
+      {chats.map((chat) => (
+        <div key={chat._id}>{chat.chatName}</div>
+      ))}
+    </div>
+  );
+==============Creating Schema/model for our data- in root folder install: npm i mongoose ==========
+Chat Data, Message data, Users Data. Structuring how data are going to be stored in our database and with what fields.
+Mongoose connects with our MongDB database.
+// chatName // isGroupChat // users // lastMessage // groupAdmin
+chatModel: import Mongoose then create the required variables(chatModel) & its properties with the path like: type: mongoose.Schema.Types.ObjectId, ref: "User"
+=========Creating Mongoose, messageModel===========
+messageModel: import mongoose on top the create its Const(messageSchema) and its properties: with the path like: type: mongoose.Schema.Types.ObjectId, ref: "User".
+// sender //content //chat //readBy
+========Creating Mongoose userModel.js=============
+as in previous models:import export and properties: Name, Email, Pass, Pic, IsAdmin.
+=======Creating the HomePage/LandingPage/SignIn/Up page================
+In this project IN LINE styling has been used, using CHACKRA UI styling.
+=========To create a Mongo DB & access==========
+Create a free account on MongoDB.com https://account.mongodb.com/account/login Create an organization -> 
+then create a new cluster -> https://cloud.mongodb.com/v2/6325f2b39447ed4f803ccf97#clusters/edit?from=ctaClusterHeader
+then create a new database (SHARED), Then create a user & pass access -> Then in the Network access click on Add IP Address
+Temporarily you can ALLOW ACCESS FROM ANYWHERE then go to Database then click on CONNECT button, then on Connect Your application,
+Driver must be on Node.js  and copy the STRING/URI (The string includes the username and password which connects your app to the MongoDB database).
+Then in your .env file and paste it there just replace the word PASSWORD with the password you created in the user access  Section.
+THEN in your Backend Folder, either create CONFIG folder & db.js file &/or create "const connectDB".
+Then in server.js add connectDB() method & import it. Then NPM START, it should get connected to MongoDB page/database and see this message in you terminal: MongoDB Connected: ac-dlyspm2-shard-00-01.mvsrzw8.mongodb.net
+====Changing the command line colour for visibility======
+Install a COLORS package= npm I colors 
+=====User Authentication in backend Then using those API for Login & signup page=========== 
+After connecting to MongoDB, User Authentication in backend Then using those API for Login & signup page
+First creating an end point for the user:
+app.use('/api/user' ,userRoutes) then create "routes" folder for all user related things
+
+======== Handling Errors =========
+Handling the errors control, download EXPRESS ASYNC HANDLER (npm i express-async-handler)
+
+======== jasonWebToken installation ===========
+Download the JasonWebToken package for "registerUser" function
+JWT authorize what can a user access to.
+===== Test in Postman=== from 12:25 min: https://www.youtube.com/watch?v=nvjYCK9oDRU&list=PLKhlp2qtUcSZsGkxAdgnPcHioRr-4guZf&index=15
+Create a new COLLECTION > create a folder inside for Authentication > inside add a new request for REGISTRATION, 
+in registration, choose BODY then at the end of the line choose JSON.
+Then create a new data to test:
+{
+  "name": "Rez So"
+  "email": "Test@Gmail.com"
+  "password": "12345"
+}
+
+Choose POST then click on SEND button
+====== to check the database====
+go to https://cloud.mongodb.com/v2/6325f2b39447ed4f803ccf97#metrics/replicaSet/6326e1e41d5d5d419031e5fa/explorer/test/users/find in collection tab.
+
+===== Saving the user's password=====
+// You should not store the passwords in plain & visible format. You should encrypt it before saving it. To encrypt it, you should use bcryptjs in your userModel.js file by (userSchema.pre("save", async function). This needs adjustment in userRoutes.js as well as user.controllers.js
+
+======Testing Signin & singup using Postman=========
+Add a new request in your Collection called Login POST and in the url/api/user choose Body>raw 
+
+=====Error handling when a wrong api/http request is sent===
+in server.js 2 error handling function/middleware
+==== For Pic use Cloudinary https://cloudinary.com/ =====
+Go to GEAR > upload > Upload presets:  >  Add Upload Preset > SAVE > Dashboard > or just find base url, in this case is: https://api.cloudinary.com/v1_1/rez-cloudinary/image/upload add it in postDetails function in Signup.js page. When uploading an image you should see the details in INSPECT > Console
+then create submitHandler function to submit the data.
+
+============FREE Server HEROKU=
+https://devcenter.heroku.com/articles/heroku-cli 
+
+deployment: https://www.youtube.com/watch?v=7cfnH1jhj00&list=PLKhlp2qtUcSZsGkxAdgnPcHioRr-4guZf&index=22
+
+do not forget to add the deployement scrip in package.json:
+
+"heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix frontend && npm run build --prefix frontend"
+basically it says; go to front end folder and install all the dependencies, then do NPM RUN BUILD
+
+after adding above line; deployment in HEROKU is failing.
+
+
+
+
+
+
